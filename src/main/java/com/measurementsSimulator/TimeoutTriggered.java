@@ -1,12 +1,13 @@
 package com.measurementsSimulator;
 
-import java.time.Instant;
-
 public class TimeoutTriggered {
-    private final String aggregateId;
-    private final Instant triggeredAt;
+    private String aggregateId;
+    private long triggeredAt; // epoch millis
 
-    public TimeoutTriggered(String aggregateId, Instant triggeredAt) {
+    // No-arg constructor for Jackson
+    public TimeoutTriggered() { }
+
+    public TimeoutTriggered(String aggregateId, long triggeredAt) {
         this.aggregateId = aggregateId;
         this.triggeredAt = triggeredAt;
     }
@@ -15,7 +16,15 @@ public class TimeoutTriggered {
         return aggregateId;
     }
 
-    public Instant getTriggeredAt() {
+    public void setAggregateId(String aggregateId) {
+        this.aggregateId = aggregateId;
+    }
+
+    public long getTriggeredAt() {
         return triggeredAt;
+    }
+
+    public void setTriggeredAt(long triggeredAt) {
+        this.triggeredAt = triggeredAt;
     }
 }

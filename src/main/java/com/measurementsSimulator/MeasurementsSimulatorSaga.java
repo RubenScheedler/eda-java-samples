@@ -7,12 +7,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-/**
- * Java port of the C# MeasurementsSimulatorSaga. This version uses small placeholder
- * framework interfaces that should be implemented against your Java messaging/saga
- * framework (for example, a framework like NServiceBus doesn't exist in Java so
- * implement the placeholder interfaces to integrate with your chosen library).
- */
 public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.SagaState>
         implements IAmStartedByMessages<SimulationStarted>, IHandleTimeouts<TimeoutTriggered> {
 
@@ -36,13 +30,13 @@ public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.Sa
         Data.setLastMeasuredValue(0);
         return RequestTimeout(context,
                 interval,
-                new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now())
+                new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now().toEpochMilli())
         );
     }
 
     @Override
     public CompletionStage<Void> timeout(TimeoutTriggered timeoutMessage, IMessageHandlerContext context) {
-        Instant measuredAt = timeoutMessage.getTriggeredAt();
+        Instant measuredAt = Instant.ofEpochMilli(timeoutMessage.getTriggeredAt());
 
         List<CompletionStage<Void>> measurementsTasks = new ArrayList<>();
 
@@ -56,10 +50,10 @@ public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.Sa
             measuredAt = measuredAt.plus(interval);
         }
 
-        return CompletableFuture.allOf(measurementsTasks.stream()
+    return CompletableFuture.allOf(measurementsTasks.stream()
                         .map(CompletionStage::toCompletableFuture)
                         .toArray(CompletableFuture[]::new))
-                .thenCompose(v -> RequestTimeout(context, interval, new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now())));
+        .thenCompose(v -> RequestTimeout(context, interval, new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now().toEpochMilli())));
     }
 
     // Stub value calculations

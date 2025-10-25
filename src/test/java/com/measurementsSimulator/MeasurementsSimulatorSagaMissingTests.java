@@ -1,5 +1,6 @@
 package com.measurementsSimulator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,8 +30,9 @@ public class MeasurementsSimulatorSagaMissingTests {
     void missingTest() throws Exception {
         // Arrange
         // Simulate deserialization of a JSON message that contains only AggregateId (no TriggeredAt)
-        String json = "{\"AggregateId\": \"" + AggregateId + "\"}";
-        TimeoutTriggered timeout = deserializeTimeoutTriggered(json);
+        String json = "{\"aggregateId\": \"" + AggregateId + "\"}";
+        ObjectMapper mapper = new ObjectMapper();
+        TimeoutTriggered timeout = mapper.readValue(json, TimeoutTriggered.class);
 
         // Act
         systemUnderTest.timeout(timeout, context).toCompletableFuture().get();
@@ -38,26 +40,6 @@ public class MeasurementsSimulatorSagaMissingTests {
         // Assert
         boolean hasSend = context.getSentMessages().stream().anyMatch(m -> m instanceof SendSimulatedMeasurements);
         assertTrue(hasSend, "Expected a SendSimulatedMeasurements message to be sent when TriggeredAt is missing/old");
-    }
-
-    private TimeoutTriggered deserializeTimeoutTriggered(String json) {
-        // Very small ad-hoc JSON parse for presentation purposes: extract AggregateId if present.
-        String marker = "\"AggregateId\"";
-        int idx = json.indexOf(marker);
-        if (idx >= 0) {
-            int colon = json.indexOf(':', idx);
-            if (colon >= 0) {
-                int firstQuote = json.indexOf('"', colon);
-                int secondQuote = json.indexOf('"', firstQuote + 1);
-                if (firstQuote >= 0 && secondQuote > firstQuote) {
-                    String id = json.substring(firstQuote + 1, secondQuote);
-                    // If TriggeredAt is missing we emulate the C# default by using a very old Instant
-                    return new TimeoutTriggered(id, Instant.EPOCH);
-                }
-            }
-        }
-        // Fallback: return a timeout with the AggregateId constant and very old timestamp
-        return new TimeoutTriggered(AggregateId, Instant.EPOCH);
     }
 
     // Local test helpers (duplicated for isolation)
