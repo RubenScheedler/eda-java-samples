@@ -1,0 +1,92 @@
+package com.measurementsSimulator;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
+/**
+ * Java port of the C# MeasurementsSimulatorSaga. This version uses small placeholder
+ * framework interfaces that should be implemented against your Java messaging/saga
+ * framework (for example, a framework like NServiceBus doesn't exist in Java so
+ * implement the placeholder interfaces to integrate with your chosen library).
+ */
+public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.SagaState>
+        implements IAmStartedByMessages<SimulationStarted>, IHandleTimeouts<TimeoutTriggered> {
+
+    public static final int IntervalInSeconds = 3600;
+    private final Duration interval = Duration.ofSeconds(IntervalInSeconds);
+    private final IDatetimeProvider dateTimeProvider;
+
+    public MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider) {
+        this.dateTimeProvider = dateTimeProvider;
+    }
+
+    @Override
+    protected void configureHowToFindSaga(SagaPropertyMapper<SagaState> mapper) {
+        mapper.mapSaga(messageProperty -> messageProperty.getAggregateId())
+                .toMessage(SimulationStarted.class, SimulationStarted::getAggregateId)
+                .toMessage(TimeoutTriggered.class, TimeoutTriggered::getAggregateId);
+    }
+
+    @Override
+    public CompletionStage<Void> handle(SimulationStarted message, IMessageHandlerContext context) {
+        Data.setLastMeasuredValue(0);
+        return RequestTimeout(context,
+                interval,
+                new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now())
+        );
+    }
+
+    @Override
+    public CompletionStage<Void> timeout(TimeoutTriggered timeoutMessage, IMessageHandlerContext context) {
+        Instant measuredAt = timeoutMessage.getTriggeredAt();
+
+        List<CompletionStage<Void>> measurementsTasks = new ArrayList<>();
+
+        while (!measuredAt.isAfter(dateTimeProvider.now())) { // Fill in downtime gaps
+            measurementsTasks.add(context.send(new SendSimulatedMeasurements(
+                    "sensor-1",
+                    generateStubTemperatureValue(),
+                    measuredAt
+            )));
+
+            measuredAt = measuredAt.plus(interval);
+        }
+
+        return CompletableFuture.allOf(measurementsTasks.stream()
+                        .map(CompletionStage::toCompletableFuture)
+                        .toArray(CompletableFuture[]::new))
+                .thenCompose(v -> RequestTimeout(context, interval, new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now())));
+    }
+
+    // Stub value calculations
+    private long generateStubTemperatureValue() {
+        Data.setLastMeasuredValue(Data.getLastMeasuredValue() + 1);
+        return Data.getLastMeasuredValue();
+    }
+
+    public static class SagaState extends ContainSagaData {
+        private String aggregateId = "";
+        private long lastMeasuredValue;
+
+        public String getAggregateId() {
+            return aggregateId;
+        }
+
+        public void setAggregateId(String aggregateId) {
+            this.aggregateId = aggregateId;
+        }
+
+        public long getLastMeasuredValue() {
+            return lastMeasuredValue;
+        }
+
+        public void setLastMeasuredValue(long lastMeasuredValue) {
+            this.lastMeasuredValue = lastMeasuredValue;
+        }
+    }
+
+}
