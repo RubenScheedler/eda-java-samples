@@ -3,6 +3,11 @@ package com.after;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.shared.DatetimeProvider;
+import com.shared.MessageHandlerContext;
+import com.shared.SendSimulatedMeasurements;
+import com.shared.SimulationStarted;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,6 +1,9 @@
 package com.after;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shared.DatetimeProvider;
+import com.shared.MessageHandlerContext;
+import com.shared.SendSimulatedMeasurements;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

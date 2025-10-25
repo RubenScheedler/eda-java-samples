@@ -1,4 +1,4 @@
-package com.after;
+package com.shared;
 
 import java.time.Instant;
 

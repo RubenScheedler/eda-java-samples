@@ -1,9 +1,9 @@
-package com.after;
+package com.shared;
 
 import java.util.concurrent.CompletionStage;
 
 public abstract class Saga<TData extends ContainSagaData> {
-    protected TData Data;
+    public TData Data;
 
     protected abstract void configureHowToFindSaga(SagaPropertyMapper<TData> mapper);
 

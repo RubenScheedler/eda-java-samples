@@ -1,4 +1,4 @@
-package com.after;
+package com.shared;
 
 public interface HandlesTimeouts<TMessage> {
     java.util.concurrent.CompletionStage<Void> timeout(TMessage message, MessageHandlerContext context);

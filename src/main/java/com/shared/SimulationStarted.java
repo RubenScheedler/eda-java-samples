@@ -1,4 +1,4 @@
-package com.after;
+package com.shared;
 
 public class SimulationStarted {
     private final String aggregateId;
