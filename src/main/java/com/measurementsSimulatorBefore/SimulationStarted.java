@@ -1,4 +1,4 @@
-package com.measurementsSimulator;
+package com.measurementsSimulatorBefore;
 
 public class SimulationStarted {
     private final String aggregateId;

@@ -1,4 +1,4 @@
-package com.measurementsSimulator;
+package com.measurementsSimulatorBefore;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
