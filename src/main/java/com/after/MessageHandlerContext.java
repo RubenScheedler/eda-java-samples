@@ -1,7 +1,7 @@
-package com.measurementsSimulatorBefore;
+package com.after;
 
 import java.util.concurrent.CompletionStage;
 
-public interface IMessageHandlerContext {
+public interface MessageHandlerContext {
     CompletionStage<Void> send(Object message);
 }

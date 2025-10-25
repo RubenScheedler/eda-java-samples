@@ -1,4 +1,4 @@
-package com.measurementsSimulatorBefore;
+package com.after;
 
 import java.util.concurrent.CompletionStage;
 
@@ -8,7 +8,7 @@ public abstract class Saga<TData extends ContainSagaData> {
     protected abstract void configureHowToFindSaga(SagaPropertyMapper<TData> mapper);
 
     // Placeholder: schedule a timeout via the messaging framework. Here we simply send the message.
-    protected CompletionStage<Void> RequestTimeout(IMessageHandlerContext context, java.time.Duration timespan, Object message) {
+    protected CompletionStage<Void> RequestTimeout(MessageHandlerContext context, java.time.Duration timespan, Object message) {
         return context.send(message);
     }
 }

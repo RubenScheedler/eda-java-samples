@@ -1,4 +1,4 @@
-package com.measurementsSimulatorBefore;
+package com.after;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,7 +77,7 @@ public class MeasurementsSimulatorSagaTest {
     }
 
     // --- Test helpers ---
-    static class TestingDatetimeProvider implements IDatetimeProvider {
+    static class TestingDatetimeProvider implements DatetimeProvider {
         private Instant now;
 
         TestingDatetimeProvider(Instant now) { this.now = now; }
@@ -88,7 +88,7 @@ public class MeasurementsSimulatorSagaTest {
         void setNow(Instant now) { this.now = now; }
     }
 
-    static class TestMessageHandlerContext implements IMessageHandlerContext {
+    static class TestMessageHandlerContext implements MessageHandlerContext {
         private final java.util.List<Object> sent = new java.util.ArrayList<>();
 
         @Override

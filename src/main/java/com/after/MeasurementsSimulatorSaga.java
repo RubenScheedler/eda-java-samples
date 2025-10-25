@@ -1,4 +1,4 @@
-package com.measurementsSimulatorBefore;
+package com.after;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -8,13 +8,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.SagaState>
-        implements IAmStartedByMessages<SimulationStarted>, IHandleTimeouts<TimeoutTriggered> {
+        implements StartedByMessages<SimulationStarted>, HandlesTimeouts<TimeoutTriggered> {
 
     public static final int IntervalInSeconds = 3600;
     private final Duration interval = Duration.ofSeconds(IntervalInSeconds);
-    private final IDatetimeProvider dateTimeProvider;
+    private final DatetimeProvider dateTimeProvider;
 
-    public MeasurementsSimulatorSaga(IDatetimeProvider dateTimeProvider) {
+    public MeasurementsSimulatorSaga(DatetimeProvider dateTimeProvider) {
         this.dateTimeProvider = dateTimeProvider;
     }
 
@@ -26,7 +26,7 @@ public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.Sa
     }
 
     @Override
-    public CompletionStage<Void> handle(SimulationStarted message, IMessageHandlerContext context) {
+    public CompletionStage<Void> handle(SimulationStarted message, MessageHandlerContext context) {
         Data.setLastMeasuredValue(0);
         return RequestTimeout(context,
                 interval,
@@ -35,7 +35,7 @@ public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.Sa
     }
 
     @Override
-    public CompletionStage<Void> timeout(TimeoutTriggered timeoutMessage, IMessageHandlerContext context) {
+    public CompletionStage<Void> timeout(TimeoutTriggered timeoutMessage, MessageHandlerContext context) {
         Instant measuredAt = Instant.ofEpochMilli(timeoutMessage.getTriggeredAt());
 
         List<CompletionStage<Void>> measurementsTasks = new ArrayList<>();

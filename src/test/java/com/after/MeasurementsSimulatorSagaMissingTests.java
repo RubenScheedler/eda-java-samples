@@ -1,4 +1,4 @@
-package com.measurementsSimulatorBefore;
+package com.after;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +44,7 @@ public class MeasurementsSimulatorSagaMissingTests {
     }
 
     // Local test helpers (duplicated for isolation)
-    static class TestingDatetimeProvider implements IDatetimeProvider {
+    static class TestingDatetimeProvider implements DatetimeProvider {
         private Instant now;
 
         TestingDatetimeProvider(Instant now) { this.now = now; }
@@ -55,7 +55,7 @@ public class MeasurementsSimulatorSagaMissingTests {
         void setNow(Instant now) { this.now = now; }
     }
 
-    static class TestMessageHandlerContext implements IMessageHandlerContext {
+    static class TestMessageHandlerContext implements MessageHandlerContext {
         private final java.util.List<Object> sent = new java.util.ArrayList<>();
 
         @Override
