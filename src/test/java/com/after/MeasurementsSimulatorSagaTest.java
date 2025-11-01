@@ -78,7 +78,7 @@ public class MeasurementsSimulatorSagaTest {
                 .collect(Collectors.toList());
 
         // We expect 4 send commands: one for the original interval + 3 to fill the gaps
-        assertEquals(4, sent.size(), "Expected 3 SendSimulatedMeasurements to be sent (1 + 2 gaps)");
+        assertEquals(4, sent.size(), "Expected 4 SendSimulatedMeasurements to be sent (1 + 3 gaps)");
     }
 
     // --- Test helpers ---
