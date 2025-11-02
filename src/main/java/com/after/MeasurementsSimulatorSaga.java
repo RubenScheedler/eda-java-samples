@@ -60,10 +60,15 @@ public class MeasurementsSimulatorSaga extends Saga<MeasurementsSimulatorSaga.Sa
             measuredAt = measuredAt.plus(interval);
         }
 
-    return CompletableFuture.allOf(measurementsTasks.stream()
-                        .map(CompletionStage::toCompletableFuture)
-                        .toArray(CompletableFuture[]::new))
-        .thenCompose(v -> RequestTimeout(context, interval, new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now().toEpochMilli())));
+    return CompletableFuture
+        .allOf(measurementsTasks.stream()
+        .map(CompletionStage::toCompletableFuture)
+        .toArray(CompletableFuture[]::new))
+        .thenCompose(v -> RequestTimeout(
+            context, 
+            interval, 
+            new TimeoutTriggered(Data.getAggregateId(), dateTimeProvider.now().toEpochMilli()))
+        );
     }
 
     // Stub value calculations

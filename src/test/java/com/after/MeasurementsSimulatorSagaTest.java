@@ -68,7 +68,7 @@ public class MeasurementsSimulatorSagaTest {
         datetimeProvider.setNow(baseNow.plusSeconds(3 * MeasurementsSimulatorSaga.IntervalInSeconds));
 
         // Trigger the timeout that was originally scheduled at baseNow
-    TimeoutTriggered timeout = new TimeoutTriggered(AggregateId, baseNow.toEpochMilli());
+        TimeoutTriggered timeout = new TimeoutTriggered(AggregateId, baseNow.toEpochMilli());
         systemUnderTest.timeout(timeout, context).toCompletableFuture().get();
 
         // Assert only one logical timeout call was processed (we invoked it once) and many SendSimulatedMeasurements were sent
