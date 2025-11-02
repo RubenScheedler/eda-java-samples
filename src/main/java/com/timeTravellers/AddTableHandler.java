@@ -16,8 +16,7 @@ public class AddTableHandler implements HandlesMessages<AddTable> {
         return repository.get(command.reservationId())
                 .thenCompose(reservation -> {
                     if (reservation == null) {
-                        // TODO what do we do?
-                        return null;
+                        reservation = new Reservation(command.reservationId());
                     }
 
                     reservation.addTable(command.tableNumber());
